@@ -1,5 +1,8 @@
 const express = require('express');
+const cors = require('cors')
+
 const app = express();
+app.use(cors())
 app.use(express.json());
 
 const port = 8080;
@@ -33,12 +36,11 @@ app.get('/promo', (req, res) => {
 app.get('/promo/:id', (req, res) => {
     const promoId = parseInt(req.params.id);
     const promo = promos.find(p => p.id === promoId);
-  
     if (!promo) {
-      res.status(404).json({ error: 'Promo not found' });
-    } else {
-      res.json(promo);
-    }
+      return res.status(404).json({ error: 'Promo not found' });
+    } 
+
+    res.json(promo);
 });
 
 
@@ -61,13 +63,12 @@ app.put('/promo/:id', (req, res) => {
 app.delete('/promo/:id', (req, res) => {
     const promoId = parseInt(req.params.id);
     const promoIndex = promos.findIndex(p => p.id === promoId);
-  
     if (promoIndex === -1) {
-      res.status(404).json({ error: 'Promo not found' });
-    } else {
-      promos.splice(promoIndex, 1);
-      res.json({ message: 'Promo deleted successfully' });
-    }
+      return  res.status(404).json({ error: 'Promo not found' });
+    } 
+
+    promos.splice(promoIndex, 1);
+    res.json({ message: 'Promo deleted successfully' });
 });
 
 
@@ -75,7 +76,7 @@ app.post('/promo/:id/participant', (req, res) => {
     const promoId = parseInt(req.params.id);  
     const promo = promos.find(p => p.id === promoId);
     if (!promo) {
-      res.status(404).json({ error: 'Promo not found' });
+      return res.status(404).json({ error: 'Promo not found' });
     }
 
     const { name } = req.body;
@@ -92,13 +93,13 @@ app.delete('/promo/:promoId/participant/:participantId', (req, res) => {
     const promoId = parseInt(req.params.promoId);  
     const promo = promos.find(p => p.id === promoId);
     if (!promo) {
-      res.status(404).json({ error: 'Promo not found' });
+      return res.status(404).json({ error: 'Promo not found' });
     } 
 
     const participantId = parseInt(req.params.participantId);
     const participantIndex = participants.findIndex(p => p.id === participantId);
     if (participantIndex === -1) {
-        res.status(404).json({ error: 'Participant not found in promo' });
+        return res.status(404).json({ error: 'Participant not found in promo' });
     } 
     participants.splice(participantIndex, 1);
     res.json({ message: 'Participant deleted successfully' });
@@ -108,7 +109,7 @@ app.post('/promo/:id/prize', (req, res) => {
     const promoId = parseInt(req.params.id);
     const promo = promos.find(p => p.id === promoId);
     if (!promo) {
-      res.status(404).json({ error: 'Promo not found' });
+      return res.status(404).json({ error: 'Promo not found' });
     } 
 
     const { description } = req.body;
@@ -124,12 +125,12 @@ app.delete('/promo/:promoId/prize/:prizeId', (req, res) => {
     const promoId = parseInt(req.params.promoId);
     const promo = promos.find(p => p.id === promoId);
     if (!promo) {
-        res.status(404).json({ error: 'Promo not found' });
+      return res.status(404).json({ error: 'Promo not found' });
     } 
-    
+    const prizeId = parseInt(req.params.prizeId);
     const prizeIndex = prizes.findIndex(p => p.id === prizeId);
     if (prizeIndex === -1) {
-        res.status(404).json({ error: 'Prize not found in promo' });
+      return res.status(404).json({ error: 'Prize not found in promo' });
     } 
     prizes.splice(prizeIndex, 1);
     res.json({ message: 'Prize deleted successfully' });
@@ -140,11 +141,11 @@ app.post('/promo/:id/raffle', (req, res) => {
     const promoId = parseInt(req.params.id);
     const promo = promos.find(p => p.id === promoId);
     if (!promo) {
-      res.status(404).json({ error: 'Promo not found' });
+      return res.status(404).json({ error: 'Promo not found' });
     } 
 
     if (participants.length !== prizes.length) {
-      res.status(409).json({ error: 'Cannot raffle, number of participants and prizes do not match' });
+      return res.status(409).json({ error: 'Cannot raffle, number of participants and prizes do not match' });
     } 
 
     const shuffledParticipants = shuffleArray(participants);

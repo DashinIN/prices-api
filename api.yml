@@ -1,0 +1,277 @@
+openapi: 3.0.0
+info:
+  title: Promo API
+  version: 1.0.0
+  description: API for managing promotions, participants, prizes, and raffles.
+
+servers:
+  - url: http://localhost:8080
+    description: Local server
+
+paths:
+  /promo:
+    post:
+      summary: Create a new promotion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Promotion created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int32
+
+    get:
+      summary: Get a list of promotions
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      format: int32
+                    name:
+                      type: string
+                    description:
+                      type: string
+
+  /promo/{id}:
+    get:
+      summary: Get details of a specific promotion
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int32
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  prizes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          format: int32
+                        description:
+                          type: string
+                  participants:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          format: int32
+                        name:
+                          type: string
+
+    put:
+      summary: Update details of a specific promotion
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Promotion updated successfully
+        '404':
+          description: Promo not found
+
+    delete:
+      summary: Delete a specific promotion
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Promotion deleted successfully
+        '404':
+          description: Promo not found
+
+  /promo/{id}/participant:
+    post:
+      summary: Add a participant to a promotion
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Participant added successfully
+        '404':
+          description: Promo not found
+
+  /promo/{promoId}/participant/{participantId}:
+    delete:
+      summary: Remove a participant from a promotion
+      parameters:
+        - in: path
+          name: promoId
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - in: path
+          name: participantId
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Participant removed successfully
+        '404':
+          description: Promo or participant not found
+
+  /promo/{id}/prize:
+    post:
+      summary: Add a prize to a promotion
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Prize added successfully
+        '404':
+          description: Promo not found
+
+  /promo/{promoId}/prize/{prizeId}:
+    delete:
+      summary: Remove a prize from a promotion
+      parameters:
+        - in: path
+          name: promoId
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - in: path
+          name: prizeId
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Prize removed successfully
+        '404':
+          description: Promo or prize not found
+
+  /promo/{id}/raffle:
+    post:
+      summary: Perform a raffle for a promotion
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Raffle completed successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    winner:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          format: int32
+                        name:
+                          type: string
+                    prize:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          format: int32
+                        description:
+                          type: string
+        '404':
+          description: Promo not found or mismatch in participants and prizes
+
